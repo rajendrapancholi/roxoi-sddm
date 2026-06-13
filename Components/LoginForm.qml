@@ -13,6 +13,24 @@ Item {
     property var stackView
     signal sessionChanged(int session)
 
+    Connections {
+        target: sddm
+        function onLoginSucceeded() {
+            loginForm.failed = false
+        }
+        function onLoginFailed() {
+            loginForm.failed = true
+            failedClearTimer.restart()
+        }
+    }
+
+    Timer {
+        id: failedClearTimer
+        interval: 2000
+        repeat:   false
+        onTriggered: loginForm.failed = false
+    }
+
     // All content centered vertically in the panel
     Column {
         id: content
@@ -33,6 +51,7 @@ Item {
 
             onLoginRequest: {
                 loginForm.failed = false
+                failedClearTimer.stop()
                 sddm.login(username, password, inputForm.currentSession)
             }
 
@@ -40,8 +59,8 @@ Item {
                 loginForm.sessionChanged(inputForm.currentSession)
             }
         }
-
-        // System power buttons (SVG icons + capability checks)
+        
+        // System power buttons
         SystemButtons {
             anchors.horizontalCenter: parent.horizontalCenter
             height: 100

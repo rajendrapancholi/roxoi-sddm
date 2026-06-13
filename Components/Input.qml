@@ -336,18 +336,12 @@ Column {
 
         Connections {
             target: sddm
-            function onLoginSucceeded() { loginBtnWrapper.isAuthenticating = false }
+            function onLoginSucceeded() {
+                loginBtnWrapper.isAuthenticating = false
+            }
             function onLoginFailed() {
                 loginBtnWrapper.isAuthenticating = false
-                inputContainer.failed = true
-                failedResetTimer.restart()
             }
-        }
-        Timer {
-            id: failedResetTimer
-            interval: 2000
-            repeat:   false
-            onTriggered: inputContainer.failed = false
         }
 
         // Dot animation timer
@@ -374,8 +368,6 @@ Column {
                     )
 
             onClicked: {
-                failedResetTimer.stop()
-                inputContainer.failed = false
                 loginBtnWrapper.isAuthenticating = true
                 inputContainer.loginRequest(usernameField.text, passwordField.text)
             }
