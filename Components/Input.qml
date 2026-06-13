@@ -316,6 +316,7 @@ Column {
 
     // Login button
     Item {
+        id: loginBtnWrapper
         height: root.font.pointSize * 3.8
         width:  parent.width
 
@@ -324,8 +325,13 @@ Column {
 
         Connections {
             target: sddm
-            function onLoginSucceeded() { isAuthenticating = false }
-            function onLoginFailed()    { isAuthenticating = false }
+            function onLoginSucceeded() { loginBtnWrapper.isAuthenticating = false }
+            function onLoginFailed() {
+                Qt.callLater(function() {
+                    loginBtnWrapper.isAuthenticating = false
+                    inputContainer.failed = true
+                })
+            }
         }
 
         // Dot animation timer
@@ -333,7 +339,7 @@ Column {
             id: authDotTimer
             interval: 400
             repeat:   true
-            running:  parent.isAuthenticating
+            running: loginBtnWrapper.isAuthenticating
             property int dotCount: 0
             onTriggered:      dotCount = (dotCount + 1) % 6
             onRunningChanged: if (!running) dotCount = 0
@@ -346,13 +352,14 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             height:       root.font.pointSize * 3.0
             hoverEnabled: true
-            enabled: !parent.isAuthenticating && (
+            enabled: !loginBtnWrapper.isAuthenticating && (
                         config.AllowEmptyPassword === "true"
                         || (usernameField.text !== "" && passwordField.text !== "")
                     )
 
             onClicked: {
-                parent.isAuthenticating = true
+                inputContainer.failed = false
+                loginBtnWrapper.isAuthenticating = true
                 inputContainer.loginRequest(usernameField.text, passwordField.text)
             }
 
@@ -361,7 +368,7 @@ Column {
                 // Idle label
                 Label {
                     anchors.centerIn: parent
-                    opacity: parent.parent.parent.isAuthenticating ? 0.0 : 1.0
+                    opacity: loginBtnWrapper.isAuthenticating ? 0.0 : 1.0
                     font.family:      "Monospace"
                     font.pointSize:   root.font.pointSize * 1.0
                     font.letterSpacing: 2
@@ -375,7 +382,7 @@ Column {
 
                 Label {
                     anchors.centerIn: parent
-                    opacity: parent.parent.parent.isAuthenticating ? 1.0 : 0.0
+                    opacity: loginBtnWrapper.isAuthenticating ? 1.0 : 0.0
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment:   Text.AlignVCenter
                     font.family:      "Monospace"
