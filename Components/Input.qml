@@ -305,10 +305,21 @@ Column {
                   : keyboard.capsLock ? "[ CAPS LOCK ACTIVE ]" : ""
             color: inputContainer.failed ? "#ff4444" : "#ffaa00"
             states: [
-                State { name: "fail"; when: inputContainer.failed;
-                    PropertyChanges { target: errLabel; opacity: 1 } },
-                State { name: "caps"; when: keyboard.capsLock;
-                    PropertyChanges { target: errLabel; opacity: 1 } }
+                State {
+                    name: "default"
+                    when: !inputContainer.failed && !keyboard.capsLock
+                    PropertyChanges { target: errLabel; opacity: 0 }
+                },
+                State {
+                    name: "fail"
+                    when: inputContainer.failed
+                    PropertyChanges { target: errLabel; opacity: 1 }
+                },
+                State {
+                    name: "caps"
+                    when: !inputContainer.failed && keyboard.capsLock
+                    PropertyChanges { target: errLabel; opacity: 1 }
+                }
             ]
             transitions: Transition { NumberAnimation { property: "opacity"; duration: 130 } }
         }
@@ -327,11 +338,16 @@ Column {
             target: sddm
             function onLoginSucceeded() { loginBtnWrapper.isAuthenticating = false }
             function onLoginFailed() {
-                Qt.callLater(function() {
-                    loginBtnWrapper.isAuthenticating = false
-                    inputContainer.failed = true
-                })
+                loginBtnWrapper.isAuthenticating = false
+                inputContainer.failed = true
+                failedResetTimer.restart()
             }
+        }
+        Timer {
+            id: failedResetTimer
+            interval: 2000
+            repeat:   false
+            onTriggered: inputContainer.failed = false
         }
 
         // Dot animation timer
@@ -358,6 +374,7 @@ Column {
                     )
 
             onClicked: {
+                failedResetTimer.stop()
                 inputContainer.failed = false
                 loginBtnWrapper.isAuthenticating = true
                 inputContainer.loginRequest(usernameField.text, passwordField.text)
@@ -411,9 +428,6 @@ Column {
             MouseArea {
                 anchors.fill: parent
                 cursorShape:  loginBtn.enabled ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                onClicked:    loginBtn.clicked()
-                hoverEnabled: true
-                onEntered:    loginBtn.hovered
                 acceptedButtons: Qt.NoButton
             }
 
