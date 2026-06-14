@@ -301,7 +301,7 @@ Column {
             font.italic:         true
             opacity: 0
             text: inputContainer.failed
-                  ? "[ ACCESS DENIED — " + (config.TranslatefailedWarning || textConstants.failed) + " ]"
+                  ? "[ ACCESS DENIED — " + (config.TranslateLoginFailedWarning || textConstants.failed) + " ]"
                   : keyboard.capsLock ? "[ CAPS LOCK ACTIVE ]" : ""
             color: inputContainer.failed ? "#ff4444" : "#ffaa00"
             states: [
@@ -336,10 +336,10 @@ Column {
 
         Connections {
             target: sddm
-            function onLoginSucceeded() {
+            onLoginSucceeded: {
                 loginBtnWrapper.isAuthenticating = false
             }
-            function onLoginFailed() {
+            onLoginFailed: {
                 loginBtnWrapper.isAuthenticating = false
             }
         }

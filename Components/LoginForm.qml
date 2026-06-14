@@ -15,10 +15,10 @@ Item {
 
     Connections {
         target: sddm
-        function onLoginSucceeded() {
+        onLoginSucceeded: {
             loginForm.failed = false
         }
-        function onLoginFailed() {
+        onLoginFailed: {
             loginForm.failed = true
             failedClearTimer.restart()
         }
