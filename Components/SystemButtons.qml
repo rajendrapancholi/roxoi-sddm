@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
 RowLayout {
     id: powerRow
@@ -70,7 +70,7 @@ RowLayout {
             }
 
             // Hover + Click
-            // Plain MouseArea — no Button involved, nothing can block it
+            // Plain MouseArea - no Button involved, nothing can block it
             MouseArea {
                 id: hov
                 anchors.fill: parent

@@ -1,0 +1,17 @@
+[SddmGreeterTheme]
+Name=roxoi
+Description=Custom Roxoi theme
+Author=Raje
+Copyright=(c) 2026
+License=GPLv3
+Type=sddm-theme
+Version=1.0
+Website=
+Screenshot=Preview/preview.png
+MainScript=Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=translations
+Email=
+Theme-Id=roxoi
+Theme-API=2.0
+QtVersion=6

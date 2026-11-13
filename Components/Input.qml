@@ -1,9 +1,9 @@
-// Components/Input.qml — ROXOI SDDM Theme
+// Components/Input.qml - ROXOI SDDM Theme
 
 import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
 Column {
     id: inputContainer
@@ -100,19 +100,20 @@ Column {
                 }
             }
 
-            indicator: Button {
+            indicator: Image {
                 id: userIcon
-                width:  userCombo.height * 0.75
-                height: parent.height
+                width:  parent.height * 0.32
+                height: width
                 anchors.left:           parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin:     userCombo.height * 0.12
-                icon.height: parent.height * 0.32
-                icon.width:  parent.height * 0.32
-                enabled:     false
-                icon.color:  "#00ff41"
-                icon.source: Qt.resolvedUrl("../Assets/User.svgz")
+                source:   Qt.resolvedUrl("../Assets/User.svgz")
+                fillMode: Image.PreserveAspectFit
+
+                layer.enabled: true
+                layer.effect: ColorOverlay { color: "#00ff41" }
             }
+            contentItem: Item {}
 
             background: Rectangle { color: "transparent"; border.color: "transparent" }
 
@@ -301,7 +302,7 @@ Column {
             font.italic:         true
             opacity: 0
             text: inputContainer.failed
-                  ? "[ ACCESS DENIED — " + (config.TranslateLoginFailedWarning || textConstants.failed) + " ]"
+                  ? "[ ACCESS DENIED - " + (config.TranslateLoginFailedWarning || textConstants.failed) + " ]"
                   : keyboard.capsLock ? "[ CAPS LOCK ACTIVE ]" : ""
             color: inputContainer.failed ? "#ff4444" : "#ffaa00"
             states: [
@@ -333,15 +334,27 @@ Column {
 
         // Authentication state flag
         property bool isAuthenticating: false
+        property bool isEnabled: true
 
         Connections {
             target: sddm
-            onLoginSucceeded: {
+            function onLoginSucceeded() {
                 loginBtnWrapper.isAuthenticating = false
+                loginBtnWrapper.isEnabled = true
             }
-            onLoginFailed: {
+            function onLoginFailed() {
                 loginBtnWrapper.isAuthenticating = false
+                loginBtnWrapper.isEnabled = true
+                inputContainer.failed = true
+                resetFailTimer.restart()
             }
+        }
+
+        // Reset failed state after 2 seconds
+        Timer {
+            id: resetFailTimer
+            interval: 2000
+            onTriggered: inputContainer.failed = false
         }
 
         // Dot animation timer
@@ -351,7 +364,7 @@ Column {
             repeat:   true
             running: loginBtnWrapper.isAuthenticating
             property int dotCount: 0
-            onTriggered:      dotCount = (dotCount + 1) % 6
+            onTriggered: dotCount = (dotCount + 1) % 6
             onRunningChanged: if (!running) dotCount = 0
         }
 
@@ -362,18 +375,22 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             height:       root.font.pointSize * 3.0
             hoverEnabled: true
-            enabled: !loginBtnWrapper.isAuthenticating && (
-                        config.AllowEmptyPassword === "true"
-                        || (usernameField.text !== "" && passwordField.text !== "")
-                    )
+            enabled: !loginBtnWrapper.isAuthenticating 
+                    && loginBtnWrapper.isEnabled
+                    && (config.AllowEmptyPassword === "true"
+                        || (usernameField.text !== "" && passwordField.text !== ""))
+            opacity: loginBtn.enabled ? 1.0 : 0.4
+            Behavior on opacity { NumberAnimation { duration: 150 } } 
 
             onClicked: {
+                if (loginBtnWrapper.isAuthenticating) return // Prevent double-click
+                
                 loginBtnWrapper.isAuthenticating = true
+                loginBtnWrapper.isEnabled = false
                 inputContainer.loginRequest(usernameField.text, passwordField.text)
             }
 
             contentItem: Item {
-
                 // Idle label
                 Label {
                     anchors.centerIn: parent

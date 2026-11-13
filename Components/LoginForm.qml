@@ -1,9 +1,9 @@
-// Components/LoginForm.qml — ROXOI SDDM Theme
+// Components/LoginForm.qml - ROXOI SDDM Theme
 
 import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
 Item {
     id: loginForm
@@ -13,12 +13,16 @@ Item {
     property var stackView
     signal sessionChanged(int session)
 
+    property bool clockVisibility: true
+    property bool systemButtonVisibility: true
+    signal virtualKeyboardToggleRequested()
+
     Connections {
         target: sddm
-        onLoginSucceeded: {
+        function onLoginSucceeded() {
             loginForm.failed = false
         }
-        onLoginFailed: {
+        function onLoginFailed() {
             loginForm.failed = true
             failedClearTimer.restart()
         }
@@ -41,6 +45,7 @@ Item {
         // Avatar + Clock (Clock.qml contains avatar, greeting, time, date, sep)
         Clock {
             width: parent.width
+            visible: loginForm.clockVisibility
         }
 
         // Input form (labels + fields + button)
@@ -64,6 +69,7 @@ Item {
         SystemButtons {
             anchors.horizontalCenter: parent.horizontalCenter
             height: 100
+            visible: loginForm.systemButtonVisibility && config.ForceHideSystemButtons !== "true"
         }
 
         // Virtual keyboard toggle
@@ -94,12 +100,7 @@ Item {
                 }
 
                 onClicked: {
-                    if (inputPanel.active) {
-                        inputPanel.active = false
-                    } else {
-                        inputPanel.active = true
-                        inputPanel.item.active = true
-                    }
+                    loginForm.virtualKeyboardToggleRequested()
                 }
             }
         }

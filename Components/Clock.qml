@@ -1,8 +1,8 @@
-// Components/Clock.qml — ROXOI SDDM Theme
+// Components/Clock.qml - ROXOI SDDM Theme
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
 Column {
     id: clock
@@ -53,7 +53,7 @@ Column {
             }
         }
 
-        // Pulsing glow opacity — same as the old canvas
+        // Pulsing glow opacity - same as the old canvas
         SequentialAnimation on opacity {
             loops:   Animation.Infinite
             running: true

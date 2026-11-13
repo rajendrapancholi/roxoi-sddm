@@ -1,8 +1,8 @@
-// Main.qml — ROXOI SDDM Theme · Modern Edition
+// Main.qml - ROXOI SDDM Theme · Modern Edition
 import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Controls 2.4
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 import "Components"
 
 Pane {
@@ -26,52 +26,52 @@ Pane {
     focus: true
 
     property var hackerQuotes: [
-        "> The quieter you become, the more you are able to hear.  — Kali Linux",
-        "> Security is not a product, but a process.  — Bruce Schneier",
-        "> The only truly secure system is one that is powered off.  — Gene Spafford",
+        "> The quieter you become, the more you are able to hear.  - Kali Linux",
+        "> Security is not a product, but a process.  - Bruce Schneier",
+        "> The only truly secure system is one that is powered off.  - Gene Spafford",
         "> Root access is not a privilege. It's a responsibility.",
-        "> sudo make me a sandwich.  — XKCD",
-        "> rm -rf /ignorance — execute with caution.",
-        "> Information wants to be free.  — Stewart Brand",
+        "> sudo make me a sandwich.  - XKCD",
+        "> rm -rf /ignorance - execute with caution.",
+        "> Information wants to be free.  - Stewart Brand",
         "> Code is poetry. Exploit is art.",
-        "> Knowledge is the most powerful weapon.  — Nelson Mandela",
-        "> Never trust a computer you can't throw out a window.  — Wozniak",
+        "> Knowledge is the most powerful weapon.  - Nelson Mandela",
+        "> Never trust a computer you can't throw out a window.  - Wozniak",
         "> In a world of locked doors, the person with the key is king.",
-        "> Privacy is not a feature — it is a right.",
-        "> With great power comes great responsibility.  — Uncle Ben",
+        "> Privacy is not a feature - it is a right.",
+        "> With great power comes great responsibility.  - Uncle Ben",
         "> Life is too short for proprietary software.",
         "> Hackers don't break systems. They reveal their true shape.",
-        "> Curiosity is the engine of achievement.  — Ken Robinson",
+        "> Curiosity is the engine of achievement.  - Ken Robinson",
         "> Every system is hackable. Every lock has a key.",
         "> The best defense is understanding the offense.",
-        "> chmod 777 your mind — open to all, restricted by none.",
+        "> chmod 777 your mind - open to all, restricted by none.",
         "> There is no patch for human stupidity.",
-        "> grep -r 'truth' /reality — no results found.",
+        "> grep -r 'truth' /reality - no results found.",
         "> Not all those who wander are lost. Some are pentesting.",
         "> Encryption is the right to whisper in a loud world.",
         "> The terminal is my canvas. The command is my brush.",
-        "> 0x41414141 — where every exploit begins its journey.",
+        "> 0x41414141 - where every exploit begins its journey.",
         "> Don't fear the root. Fear those who misuse it.",
         "> Firewalls are just suggestions to the determined.",
         "> In God we trust. All others we monitor.",
         "> The quietest packets carry the loudest secrets.",
-        "> ls -la /secrets — permission denied. Always.",
+        "> ls -la /secrets - permission denied. Always.",
         "> Any sufficiently advanced bug is indistinguishable from a feature.",
         "> First, do no harm. Then, do no traceable harm.",
         "> We are not criminals. We are cartographers of the digital frontier.",
-        "> ping -t existence — waiting for reply...",
+        "> ping -t existence - waiting for reply...",
         "> A hacker is just a curious mind with root access.",
         "> The best backdoor is the one they built themselves.",
         "> It's not a bug. It's an undocumented feature.",
-        "> All your base are belong to us.  — CATS, 2101",
+        "> All your base are belong to us.  - CATS, 2101",
         "> Security through obscurity is not security at all.",
-        "> The network is the computer.  — John Gage",
-        "> cat /proc/enlightenment — file not found.",
+        "> The network is the computer.  - John Gage",
+        "> cat /proc/enlightenment - file not found.",
         "> Trust no one. Verify everything. Audit often.",
         "> You can't defend what you don't understand.",
         "> Real hackers don't script. They write the scripts.",
         "> Anonymity is armor. Knowledge is the blade.",
-        "> /dev/null — where bad ideas and weak passwords go to die."
+        "> /dev/null - where bad ideas and weak passwords go to die."
     ]
 
     Item {
@@ -323,7 +323,7 @@ Pane {
             Component.onCompleted: requestPaint()
         }
 
-        // z:13  Login form — vertically centered in panel
+        // z:13  Login form - vertically centered in panel
         LoginForm {
             id: form
             anchors.left:           parent.left
@@ -340,6 +340,7 @@ Pane {
             virtualKeyboardActive: virtualKeyboard.state == "visible"
             z: 13
             onSessionChanged: function(idx) {}
+            onVirtualKeyboardToggleRequested: virtualKeyboard.switchState()
         }
 
         // Virtual keyboard
@@ -366,7 +367,7 @@ Pane {
                 Transition {
                     from: "hidden"; to: "visible"
                     SequentialAnimation {
-                        ScriptAction { script: { virtualKeyboard.item.activated = true; Qt.inputMethod.show() } }
+                        ScriptAction { script: { virtualKeyboard.item.active = true; Qt.inputMethod.show() } }
                         ParallelAnimation {
                             NumberAnimation  { target: virtualKeyboard; property: "y"; duration: 100; easing.type: Easing.OutQuad }
                             OpacityAnimator { target: virtualKeyboard;                duration: 100; easing.type: Easing.OutQuad }
@@ -380,7 +381,7 @@ Pane {
                             NumberAnimation  { target: virtualKeyboard; property: "y"; duration: 100; easing.type: Easing.InQuad }
                             OpacityAnimator { target: virtualKeyboard;                duration: 100; easing.type: Easing.InQuad }
                         }
-                        ScriptAction { script: Qt.inputMethod.hide() }
+                        ScriptAction { script: { virtualKeyboard.item.active = false; Qt.inputMethod.hide() } }
                     }
                 }
             ]
